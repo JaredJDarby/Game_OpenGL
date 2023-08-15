@@ -25,7 +25,7 @@ int main(void)
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(1920, 1080, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1920, 1080, "Game_OpenGL", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -46,10 +46,10 @@ int main(void)
 
     /* Triangle vertices */
     float vertices[] = {
-        0.5f, 0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f,
-        -0.5f, 0.5f, 0.0f
+        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //top right
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,//bottom right
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //bottom left
+        -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f//top left
     };
     unsigned int indicies[] = {
         0, 1, 3,
@@ -74,8 +74,10 @@ int main(void)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
 
     //Sets vertex attribute pointers.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
