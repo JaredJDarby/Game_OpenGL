@@ -1,5 +1,6 @@
 #include <GLAD/glad.h>
 #include <GLFW/glfw3.h>
+#include <stb_image/stb_image.h>
 
 #include <Shaders/Shader.h>
 
@@ -9,14 +10,14 @@
 GLFWwindow* window;
 
 //Setting up Vertex Buffer Object, Vertex Array Object and Element Buffer Object
-unsigned int VBO, VAO, EBO;
+unsigned int VBO, VAO, EBO, texture;
 
 /* Triangle vertices */
 float vertices[] = {
-    0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //top right
-    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,//bottom right
-    -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //bottom left
-    -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f//top left
+    0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, //top right
+    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, //bottom right
+    -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, //bottom left
+    -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f //top left
 };
 unsigned int indicies[] = {
     0, 1, 3,
@@ -58,10 +59,12 @@ void initialiseShaderObjects()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
 
     //Sets vertex attribute pointers.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -91,6 +94,33 @@ static int initialiseGLFWWindow(int screenWidth, int screenHeight) {
     }
 }
 
+void initialiseTexture(const char* textureFile)
+{
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    //Specifies what to do if texture is smaller than object
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    //Specifies what to do when scaling upwards or downwards
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load(textureFile, &width, &height, &nrChannels, 0);
+
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Error - texture has failed to load." << std::endl;
+    }
+    stbi_image_free(data);
+}
+
 int main(void)
 {
     initialiseGLFWWindow(1920, 1080); //Screen Width, Screen Height
@@ -100,6 +130,10 @@ int main(void)
     Shader gameShader(vertexFile.c_str(), fragmentFile.c_str());
 
     initialiseShaderObjects();
+    
+    std::string textureFile = "D:/Documents/Programming/C++/Game_OpenGL/src/textures/container.jpg";
+
+    initialiseTexture(textureFile.c_str());
 
     debugMode(0); //Wireframe
 
@@ -112,7 +146,7 @@ int main(void)
         /* Render here */
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
+        glBindTexture(GL_TEXTURE_2D, texture);
         //Activating shader program.
         gameShader.use();
         glBindVertexArray(VAO);
