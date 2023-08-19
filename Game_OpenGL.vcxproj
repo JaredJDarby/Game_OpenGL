@@ -147,10 +147,14 @@
   <ItemGroup>
     <ClInclude Include="Dependencies\include\Shaders\Shader.h" />
     <ClInclude Include="Dependencies\include\stb_image\stb_image.h" />
+    <ClInclude Include="include\Shaders\Shader.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Game_OpenGL.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\Fragment_Shader.fs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

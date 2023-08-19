@@ -16,6 +16,14 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
 }
 
+void debugMode(int wireFrameOn)
+{
+    if (wireFrameOn == 1)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    }
+}
+
 int main(void)
 {
     GLFWwindow* window;
@@ -42,7 +50,7 @@ int main(void)
         return -1;
     }
 
-    Shader gameShader("D:/Documents/Programming/C++/Game_OpenGL/Shaders/Vertex_Shader.vs", "D:/Documents/Programming/C++/Game_OpenGL/Shaders/Fragment_Shader.fs");
+    Shader gameShader("D:/Documents/Programming/C++/Game_OpenGL/src/Shaders/Vertex_Shader.vs", "D:/Documents/Programming/C++/Game_OpenGL/src/Shaders/Fragment_Shader.fs");
 
     /* Triangle vertices */
     float vertices[] = {
@@ -57,9 +65,7 @@ int main(void)
     };
 
     //Setting up Vertex Buffer Object, Vertex Array Object and Element Buffer Object
-    unsigned int VBO;
-    unsigned int VAO;
-    unsigned int EBO;
+    unsigned int VBO, VAO, EBO;
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -82,8 +88,7 @@ int main(void)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    debugMode(0); //Wireframe
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
