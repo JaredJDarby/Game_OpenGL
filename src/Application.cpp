@@ -5,6 +5,23 @@
 
 #include <iostream>
 
+GLFWwindow* window;
+
+//Setting up Vertex Buffer Object, Vertex Array Object and Element Buffer Object
+unsigned int VBO, VAO, EBO;
+
+/* Triangle vertices */
+float vertices[] = {
+    0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //top right
+    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,//bottom right
+    -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //bottom left
+    -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f//top left
+};
+unsigned int indicies[] = {
+    0, 1, 3,
+    1, 2, 3
+};
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -24,48 +41,8 @@ void debugMode(int wireFrameOn)
     }
 }
 
-int main(void)
+void initialiseShaderObjects()
 {
-    GLFWwindow* window;
-
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
-
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(1920, 1080, "Game_OpenGL", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }
-
-    /* Make the window's context current */
-    glfwMakeContextCurrent(window);
-
-    //Initialising GLAD - must be done before calling OpenGL functions
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-
-    Shader gameShader("D:/Documents/Programming/C++/Game_OpenGL/src/Shaders/Vertex_Shader.vs", "D:/Documents/Programming/C++/Game_OpenGL/src/Shaders/Fragment_Shader.fs");
-
-    /* Triangle vertices */
-    float vertices[] = {
-        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //top right
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,//bottom right
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //bottom left
-        -0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f//top left
-    };
-    unsigned int indicies[] = {
-        0, 1, 3,
-        1, 2, 3
-    };
-
-    //Setting up Vertex Buffer Object, Vertex Array Object and Element Buffer Object
-    unsigned int VBO, VAO, EBO;
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -82,11 +59,44 @@ int main(void)
     //Sets vertex attribute pointers.
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
+
+static int initialiseGLFWWindow(int screenWidth, int screenHeight) {
+    /* Initialize the library */
+    if (!glfwInit())
+        return -1;
+
+    /* Create a windowed mode window and its OpenGL context */
+    window = glfwCreateWindow(screenWidth, screenHeight, "Game_OpenGL", NULL, NULL);
+    if (!window)
+    {
+        glfwTerminate();
+        return -1;
+    }
+
+    /* Make the window's context current */
+    glfwMakeContextCurrent(window);
+
+    //Initialising GLAD - must be done before calling OpenGL functions
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }
+}
+
+int main(void)
+{
+    initialiseGLFWWindow(1920, 1080); //Screen Width, Screen Height
+
+    Shader gameShader("D:/Documents/Programming/C++/Game_OpenGL/src/Shaders/Vertex_Shader.vs", "D:/Documents/Programming/C++/Game_OpenGL/src/Shaders/Fragment_Shader.fs");
+
+    initialiseShaderObjects();
 
     debugMode(0); //Wireframe
 
