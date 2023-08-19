@@ -16,10 +16,8 @@ public:
 	Shader(const char* vertexPath, const char* fragmentPath)
 	{
 		//Retrieves source code from given filepath.
-		std::string vertexCode;
-		std::string fragmentCode;
-		std::ifstream vShaderFile;
-		std::ifstream fShaderFile;
+		std::string vertexCode, fragmentCode;
+		std::ifstream vShaderFile, fShaderFile;
 
 		vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 		fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);

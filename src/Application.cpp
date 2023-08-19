@@ -4,6 +4,7 @@
 #include <Shaders/Shader.h>
 
 #include <iostream>
+#include <string>
 
 GLFWwindow* window;
 
@@ -94,7 +95,9 @@ int main(void)
 {
     initialiseGLFWWindow(1920, 1080); //Screen Width, Screen Height
 
-    Shader gameShader("D:/Documents/Programming/C++/Game_OpenGL/src/Shaders/Vertex_Shader.vs", "D:/Documents/Programming/C++/Game_OpenGL/src/Shaders/Fragment_Shader.fs");
+    std::string vertexFile = "D:/Documents/Programming/C++/Game_OpenGL/src/Shaders/Vertex_Shader.vs", fragmentFile = "D:/Documents/Programming/C++/Game_OpenGL/src/Shaders/Fragment_Shader.fs";;
+
+    Shader gameShader(vertexFile.c_str(), fragmentFile.c_str());
 
     initialiseShaderObjects();
 
