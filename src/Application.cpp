@@ -5,7 +5,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-
 #include <Shaders/Shader.h>
 
 #include <iostream>
@@ -15,6 +14,8 @@ GLFWwindow* window;
 
 //Setting up Vertex Buffer Object, Vertex Array Object and Element Buffer Object
 unsigned int VBO, VAO, EBO, texture1, texture2;
+
+const unsigned int screenWidth = 1920, screenHeight = 1080;
 
 /* Cube vertices */
 float vertices[] = {
@@ -65,9 +66,32 @@ float vertices[] = {
 //    1, 2, 3
 //};
 
-//glm::vec3 cameraPod = glm::vec3(0.0f, 0.0f, 3.0f);
-//glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-//glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 cubePositions[] = {
+    glm::vec3(0.0f,  0.0f,  0.0f),
+    glm::vec3(2.0f,  5.0f, -15.0f),
+    glm::vec3(-1.5f, -2.2f, -2.5f),
+    glm::vec3(-3.8f, -2.0f, -12.3f),
+    glm::vec3(2.4f, -0.4f, -3.5f),
+    glm::vec3(-1.7f,  3.0f, -7.5f),
+    glm::vec3(1.3f, -2.0f, -2.5f),
+    glm::vec3(1.5f,  2.0f, -2.5f),
+    glm::vec3(1.5f,  0.2f, -1.5f),
+    glm::vec3(-1.3f,  1.0f, -1.5f)
+};
+
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+bool firstMouse = true;
+float yaw = -90.0f;
+float pitch = 0.0f;
+float lastX = 800.0f / 2.0;
+float lastY = 600.0 / 2.0;
+float fov = 45.0f;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -77,10 +101,74 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
         glfwSetWindowShouldClose(window, true);
+    }
+
+    float cameraSpeed = static_cast<float>(2.5 * deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        cameraPos += cameraSpeed * cameraFront;
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        cameraPos -= cameraSpeed * cameraFront;
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
 }
 
-void debugMode(int wireFrameOn)
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+{
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; 
+    lastX = xpos;
+    lastY = ypos;
+
+    float sensitivity = 0.1f; 
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    if (pitch > 89.0f)
+    {
+        pitch = 89.0f;
+    }
+    if (pitch < -89.0f)
+    {
+        pitch = -89.0f;
+    }
+
+    glm::vec3 front;
+    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    front.y = sin(glm::radians(pitch));
+    front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(front);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
+    std::cout << "";
+}
+
+void debugModeStart(int wireFrameOn)
 {
     if (wireFrameOn == 1)
     {
@@ -131,6 +219,10 @@ static int initialiseGLFWWindow(int screenWidth, int screenHeight) {
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     //Initialising GLAD - must be done before calling OpenGL functions
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -178,9 +270,9 @@ unsigned int initialiseTexture(const char* textureFile, bool isAlpha)
 
 int main(void)
 {
-    initialiseGLFWWindow(1920, 1080); //Screen Width, Screen Height
+    initialiseGLFWWindow(screenWidth, screenHeight); //Screen Width, Screen Height
 
-    std::string vertexFile = "D:/Documents/Programming/C++/Game_OpenGL/src/Shaders/Vertex_Shader.vs", fragmentFile = "D:/Documents/Programming/C++/Game_OpenGL/src/Shaders/Fragment_Shader.fs";;
+    std::string vertexFile = "D:/Documents/Programming/C++/Game_OpenGL/src/resources/shaders/Vertex_Shader.vs", fragmentFile = "D:/Documents/Programming/C++/Game_OpenGL/src/resources/shaders/Fragment_Shader.fs";;
 
     glEnable(GL_DEPTH_TEST);
 
@@ -188,21 +280,25 @@ int main(void)
 
     initialiseShaderObjects();
     
-    std::string textureFile = "D:/Documents/Programming/C++/Game_OpenGL/src/textures/container.jpg";
-    std::string textureFileTwo = "D:/Documents/Programming/C++/Game_OpenGL/src/textures/awesomeface.png";
+    std::string textureFile = "D:/Documents/Programming/C++/Game_OpenGL/src/resources/textures/container.jpg";
+    std::string textureFileTwo = "D:/Documents/Programming/C++/Game_OpenGL/src/resources/textures/awesomeface.png";
 
     texture1 = initialiseTexture(textureFile.c_str(), false);
-    texture2 = initialiseTexture(textureFileTwo.c_str(), true);
+    //texture2 = initialiseTexture(textureFileTwo.c_str(), true);
 
     gameShader.use();
     gameShader.setInt("texture1", 0);
-    gameShader.setInt("texture2", 1);
+    //gameShader.setInt("texture2", 1);
 
-    debugMode(0); //Wireframe
+    debugModeStart(0); //Wireframe
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
+
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
         //Takes button input every frame.
         processInput(window);
 
@@ -218,21 +314,27 @@ int main(void)
         //Activating shader program.
         gameShader.use();
 
-        glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection;
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        projection = glm::perspective(glm::radians(fov), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 
-        unsigned int modelLocation = glGetUniformLocation(gameShader.shaderProgram, "model");
-        unsigned int viewLocation = glGetUniformLocation(gameShader.shaderProgram, "view");
-        glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
+        //unsigned int viewLocation = glGetUniformLocation(gameShader.shaderProgram, "view");
+        //glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
         gameShader.setMat4("projection", projection);
+        gameShader.setMat4("view", view);
 
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (unsigned int i = 0; i < 10; i++)
+        {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cubePositions[i]);
+            float angle = 20.0f * i;
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            gameShader.setMat4("model", model);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
         //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         /* Swap front and back buffers */
