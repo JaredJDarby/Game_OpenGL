@@ -272,7 +272,7 @@ int main(void)
 {
     initialiseGLFWWindow(screenWidth, screenHeight); //Screen Width, Screen Height
 
-    std::string vertexFile = "D:/Documents/Programming/C++/Game_OpenGL/src/resources/shaders/Vertex_Shader.vs", fragmentFile = "D:/Documents/Programming/C++/Game_OpenGL/src/resources/shaders/Fragment_Shader.fs";;
+    std::string vertexFile = "resources/shaders/Vertex_Shader.vs", fragmentFile = "resources/shaders/Fragment_Shader.fs";;
 
     glEnable(GL_DEPTH_TEST);
 
@@ -280,15 +280,15 @@ int main(void)
 
     initialiseShaderObjects();
     
-    std::string textureFile = "D:/Documents/Programming/C++/Game_OpenGL/src/resources/textures/container.jpg";
-    std::string textureFileTwo = "D:/Documents/Programming/C++/Game_OpenGL/src/resources/textures/awesomeface.png";
+    std::string textureFile = "resources/textures/container.jpg";
+    std::string textureFileTwo = "resources/textures/awesomeface.png";
 
     texture1 = initialiseTexture(textureFile.c_str(), false);
-    //texture2 = initialiseTexture(textureFileTwo.c_str(), true);
+    texture2 = initialiseTexture(textureFileTwo.c_str(), true);
 
     gameShader.use();
     gameShader.setInt("texture1", 0);
-    //gameShader.setInt("texture2", 1);
+    gameShader.setInt("texture2", 1);
 
     debugModeStart(0); //Wireframe
 
