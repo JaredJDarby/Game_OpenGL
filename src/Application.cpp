@@ -139,10 +139,11 @@ static int initialiseGLFWWindow(int screenWidth, int screenHeight) {
     }
 }
 
-void initialiseTexture(const char* textureFile)
+unsigned int initialiseTexture(const char* textureFile, bool isAlpha)
 {
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
+    unsigned int currentTexture;
+    glGenTextures(1, &currentTexture);
+    glBindTexture(GL_TEXTURE_2D, currentTexture);
 
     //Specifies what to do if texture is smaller than object
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -157,38 +158,22 @@ void initialiseTexture(const char* textureFile)
 
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
+        if (isAlpha) 
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
+        else {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
     }
     else
     {
         std::cout << "Error - texture has failed to load." << std::endl;
     }
     stbi_image_free(data);
-
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-
-    //Specifies what to do if texture is smaller than object
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    //Specifies what to do when scaling upwards or downwards
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    data = stbi_load("D:/Documents/Programming/C++/Game_OpenGL/src/textures/awesomeface.png", &width, &height, &nrChannels, 0);
-
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-        std::cout << "Texture 2 has loaded." << std::endl;
-    }
-    else
-    {
-        std::cout << "Error - texture2 has failed to load." << std::endl;
-    }
-    stbi_image_free(data);
+    return(currentTexture);
 }
 
 int main(void)
@@ -204,10 +189,11 @@ int main(void)
     initialiseShaderObjects();
     
     std::string textureFile = "D:/Documents/Programming/C++/Game_OpenGL/src/textures/container.jpg";
+    std::string textureFileTwo = "D:/Documents/Programming/C++/Game_OpenGL/src/textures/awesomeface.png";
 
-    initialiseTexture(textureFile.c_str());
+    texture1 = initialiseTexture(textureFile.c_str(), false);
+    texture2 = initialiseTexture(textureFileTwo.c_str(), true);
 
-    //Shader gameShader(vertexFile.c_str(), fragmentFile.c_str());
     gameShader.use();
     gameShader.setInt("texture1", 0);
     gameShader.setInt("texture2", 1);
