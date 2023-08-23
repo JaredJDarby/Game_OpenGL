@@ -14,8 +14,6 @@
 
 GLFWwindow* window;
 
-//Setting up Vertex Buffer Object, Vertex Array Object and Element Buffer Object
-//unsigned int VBO;
 unsigned int VAO;
 unsigned int EBO, texture1, texture2;
 
@@ -206,6 +204,7 @@ static int initialiseGLFWWindow(int screenWidth, int screenHeight) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+    return 0;
 }
 
 int main(void)
