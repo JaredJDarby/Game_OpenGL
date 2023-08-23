@@ -6,6 +6,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <Shaders/Shader.h>
+#include <Texture.h>
+#include <VertexBuffer.h>
 
 #include <iostream>
 #include <string>
@@ -13,7 +15,9 @@
 GLFWwindow* window;
 
 //Setting up Vertex Buffer Object, Vertex Array Object and Element Buffer Object
-unsigned int VBO, VAO, EBO, texture1, texture2;
+//unsigned int VBO;
+unsigned int VAO;
+unsigned int EBO, texture1, texture2;
 
 const unsigned int screenWidth = 1920, screenHeight = 1080;
 
@@ -176,33 +180,6 @@ void debugModeStart(int wireFrameOn)
     }
 }
 
-void initialiseShaderObjects()
-{
-
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    //glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-    //Copies array of verties into a buffer for use.
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
-
-    //Sets vertex attribute pointers.
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    //glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    //glEnableVertexAttribArray(2);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
-}
-
 static int initialiseGLFWWindow(int screenWidth, int screenHeight) {
     /* Initialize the library */
     if (!glfwInit())
@@ -231,43 +208,6 @@ static int initialiseGLFWWindow(int screenWidth, int screenHeight) {
     }
 }
 
-unsigned int initialiseTexture(const char* textureFile, bool isAlpha)
-{
-    unsigned int currentTexture;
-    glGenTextures(1, &currentTexture);
-    glBindTexture(GL_TEXTURE_2D, currentTexture);
-
-    //Specifies what to do if texture is smaller than object
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    //Specifies what to do when scaling upwards or downwards
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char* data = stbi_load(textureFile, &width, &height, &nrChannels, 0);
-
-    if (data)
-    {
-        if (isAlpha) 
-        {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-        else {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-    }
-    else
-    {
-        std::cout << "Error - texture has failed to load." << std::endl;
-    }
-    stbi_image_free(data);
-    return(currentTexture);
-}
-
 int main(void)
 {
     initialiseGLFWWindow(screenWidth, screenHeight); //Screen Width, Screen Height
@@ -278,13 +218,25 @@ int main(void)
 
     Shader gameShader(vertexFile.c_str(), fragmentFile.c_str());
 
-    initialiseShaderObjects();
-    
+    glGenVertexArrays(1, &VAO);
+    VertexBuffer vertexBufferObj(1, vertices, sizeof(vertices));
+    glBindVertexArray(VAO);
+
+    //Sets vertex attribute pointers.
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    //Texture mapping
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    vertexBufferObj.finBindBuffer();
+    glBindVertexArray(0);
+
     std::string textureFile = "resources/textures/container.jpg";
     std::string textureFileTwo = "resources/textures/awesomeface.png";
 
-    texture1 = initialiseTexture(textureFile.c_str(), false);
-    texture2 = initialiseTexture(textureFileTwo.c_str(), true);
+    Texture texture1(textureFile.c_str(), false);
+    Texture texture2(textureFileTwo.c_str(), true);
 
     gameShader.use();
     gameShader.setInt("texture1", 0);
@@ -307,9 +259,9 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
+        texture1.applyTexture();
         glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
+        texture2.applyTexture();
 
         //Activating shader program.
         gameShader.use();
@@ -319,8 +271,6 @@ int main(void)
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         projection = glm::perspective(glm::radians(fov), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
 
-        //unsigned int viewLocation = glGetUniformLocation(gameShader.shaderProgram, "view");
-        //glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);
         gameShader.setMat4("projection", projection);
         gameShader.setMat4("view", view);
 
@@ -334,8 +284,6 @@ int main(void)
             gameShader.setMat4("model", model);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

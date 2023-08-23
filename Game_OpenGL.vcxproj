@@ -156,7 +156,11 @@
   <ItemGroup>
     <ClInclude Include="Dependencies\include\Shaders\Shader.h" />
     <ClInclude Include="Dependencies\include\stb_image\stb_image.h" />
+    <ClInclude Include="include\GameObject.h" />
+    <ClInclude Include="include\VertexArray.h" />
     <ClInclude Include="include\Shaders\Shader.h" />
+    <ClInclude Include="include\Texture.h" />
+    <ClInclude Include="include\VertexBuffer.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
