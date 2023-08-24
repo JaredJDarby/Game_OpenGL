@@ -7,6 +7,7 @@ class VertexBuffer
 public:
     VertexBuffer(int objID, float vertices[], int verticesSize)
     {
+        //Initialising Vertex Buffer Object.
         unsigned int VBO;
         glGenBuffers(objID, &VBO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);

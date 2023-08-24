@@ -14,71 +14,111 @@
 
 GLFWwindow* window;
 
-unsigned int VAO;
-unsigned int EBO, texture1, texture2;
+unsigned int VAO, EBO, texture1, texture2;
 
 const unsigned int screenWidth = 1920, screenHeight = 1080;
 
 /* Cube vertices */
 float vertices[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+    -0.2f,  1.0f, -0.0f,  1.0f, 0.0f,
+     0.2f,  1.0f, -0.0f,  0.0f, 0.0f,
+     0.0f,  0.4f,  0.3f,  0.5f, 1.0f,
 
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+     0.0f,  0.0f,  0.3f,  1.0f, 0.0f,
+     0.0f,  0.4f,  0.3f,  0.0f, 0.0f,
+     0.8f,  0.1f,  0.15f, 0.5f, 1.0f,
 
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+     0.0f,  0.0f,  0.3f,  1.0f, 0.0f,
+     0.0f,  0.4f,  0.3f,  0.0f, 0.0f,
+    -0.8f,  0.1f,  0.15f, 0.5f, 1.0f,
 
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+    -0.2f,  1.0f,  0.0f,  1.0f, 0.0f,
+     0.0f,  0.4f,  0.3f,  0.0f, 0.0f,
+    -0.8f,  0.1f,  0.15f, 0.5f, 1.0f,
 
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+     0.2f,  1.0f,  0.0f,  1.0f, 0.0f,
+     0.0f,  0.4f,  0.3f,  0.0f, 0.0f,
+     0.8f,  0.1f,  0.15f, 0.5f, 1.0f,
 
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+     1.0f,  0.0f, -0.0f,  1.0f, 0.0f,
+     1.0f,  0.3f,  0.0f,  0.0f, 0.0f,
+     0.8f,  0.1f,  0.15f, 0.5f, 1.0f,
+
+    -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+    -1.0f,  0.3f, -0.0f,  0.0f, 0.0f,
+    -0.8f,  0.1f,  0.15f, 0.5f, 1.0f,
+
+     0.8f,  0.1f,  0.15f, 1.0f, 0.0f,
+     1.0f,  0.3f,  0.0f,  0.0f, 0.0f,
+     0.2f,  1.0f,  0.0f,  0.5f, 1.0f,
+
+    -0.8f,  0.1f,  0.15f, 1.0f, 0.0f,
+    -1.0f,  0.3f, -0.0f,  0.0f, 0.0f,
+    -0.2f,  1.0f,  0.0f,  0.5f, 1.0f,
+
+    -0.0f,  0.0f,  0.3f,  1.0f, 0.0f,
+    -0.0f,  0.05f, 0.15f, 0.0f, 0.0f,
+    -0.8f,  0.1f,  0.15f, 0.5f, 1.0f,
+
+    -0.0f,  0.05f, 0.15f, 1.0f, 0.0f,
+    -0.0f,  0.0f, -0.0f,  0.0f, 0.0f,
+    -0.8f,  0.1f,  0.15f, 0.5f, 1.0f,
+
+    -0.0f,  0.0f,  0.3f,  1.0f, 0.0f,
+    -0.0f,  0.05f, 0.15f, 0.0f, 0.0f,
+     0.8f,  0.1f,  0.15f, 0.5f, 1.0f,
+
+    -0.0f,  0.05f, 0.15f, 1.0f, 0.0f,
+    -0.0f,  0.0f, -0.0f,  0.0f, 0.0f,
+     0.8f,  0.1f,  0.15f, 0.5f, 1.0f,
+
+    -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+    -1.0f,  0.3f,  0.0f,  0.0f, 0.0f,
+    -0.8f,  0.1f,  0.0f,  0.5f, 1.0f,
+
+    -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+    -0.8f,  0.1f,  0.0f,  0.0f, 0.0f,
+    -0.8f,  0.1f,  0.15f, 0.5f, 1.0f,
+
+     1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+     1.0f,  0.3f,  0.0f,  0.0f, 0.0f,
+     0.8f,  0.1f,  0.0f,  0.5f, 1.0f,
+
+     1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+     0.8f,  0.1f,  0.0f,  0.0f, 0.0f,
+     0.8f,  0.1f,  0.15f, 0.5f, 1.0f,
+
+    -0.8f,  0.1f,  0.0f,  1.0f, 0.0f,
+    -1.0f,  0.3f,  0.0f,  0.0f, 0.0f,
+    -0.2f,  1.0f, -0.0f,  0.5f, 1.0f,
+
+     0.8f,  0.1f,  0.0f,  1.0f, 0.0f,
+     1.0f,  0.3f,  0.0f,  0.0f, 0.0f,
+     0.2f,  1.0f, -0.0f,  0.5f, 1.0f,
+
+    -0.8f,  0.1f,  0.0f,  1.0f, 0.0f,
+    -0.8f,  0.1f,  0.15f, 0.0f, 0.0f,
+    -0.2f,  1.0f, -0.0f,  0.5f, 1.0f,
+
+     0.8f,  0.1f,  0.0f,  1.0f, 0.0f,
+     0.8f,  0.1f,  0.15f, 0.0f, 0.0f,
+     0.2f,  1.0f, -0.0f,  0.5f, 1.0f,
+
+     0.8f,  0.1f,  0.15f, 1.0f, 0.0f,
+    -0.0f,  0.0f, -0.0f,  0.0f, 0.0f,
+     0.2f,  1.0f, -0.0f,  0.5f, 1.0f,
+
+    -0.8f,  0.1f,  0.15f, 1.0f, 0.0f,
+    -0.0f,  0.0f, -0.0f,  0.0f, 0.0f,
+    -0.2f,  1.0f, -0.0f,  0.5f, 1.0f,
+
+    -0.0f,  0.0f, -0.0f,  1.0f, 0.0f,
+    -0.2f,  1.0f, -0.0f,  0.0f, 0.0f,
+     0.2f,  1.0f, -0.0f,  0.5f, 1.0f,
 };
-//unsigned int indicies[] = {
-//    0, 1, 3,
-//    1, 2, 3
-//};
 
 glm::vec3 cubePositions[] = {
     glm::vec3(0.0f,  0.0f,  0.0f),
-    glm::vec3(2.0f,  5.0f, -15.0f),
-    glm::vec3(-1.5f, -2.2f, -2.5f),
-    glm::vec3(-3.8f, -2.0f, -12.3f),
-    glm::vec3(2.4f, -0.4f, -3.5f),
-    glm::vec3(-1.7f,  3.0f, -7.5f),
-    glm::vec3(1.3f, -2.0f, -2.5f),
-    glm::vec3(1.5f,  2.0f, -2.5f),
-    glm::vec3(1.5f,  0.2f, -1.5f),
-    glm::vec3(-1.3f,  1.0f, -1.5f)
 };
 
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
@@ -95,6 +135,8 @@ float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
 float fov = 45.0f;
 
+glm::mat4 model = glm::mat4(1.0f);
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -110,25 +152,89 @@ void processInput(GLFWwindow* window)
     float cameraSpeed = static_cast<float>(2.5 * deltaTime);
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-        cameraPos += cameraSpeed * cameraFront;
+        //cameraPos += cameraSpeed * cameraFront;
+        model = glm::rotate(model, glm::radians(90.0f) * deltaTime, glm::vec3(1.0f, 0.0f, 0.0f));
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
-        cameraPos -= cameraSpeed * cameraFront;
+        //cameraPos -= cameraSpeed * cameraFront;
+        model = glm::rotate(model, glm::radians(-90.0f)* deltaTime, glm::vec3(1.0f, 0.0f, 0.0f));
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        //cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        model = glm::rotate(model, glm::radians(-90.0f) * deltaTime , glm::vec3(0.0f, 0.0f, 1.0f));
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        //cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        model = glm::rotate(model, glm::radians(90.0f) * deltaTime , glm::vec3(0.0f, 0.0f, 1.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+    {
+        //cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        model = glm::rotate(model, glm::radians(-90.0f) * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+    {
+        //cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        model = glm::rotate(model, glm::radians(90.0f) * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+    {
+        //cameraPos += cameraSpeed * cameraFront;
+        model = glm::rotate(model, glm::radians(90.0f) * deltaTime, glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    {
+        //cameraPos -= cameraSpeed * cameraFront;
+        model = glm::rotate(model, glm::radians(-90.0f) * deltaTime, glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+    {
+        //cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        model = glm::rotate(model, glm::radians(-90.0f) * deltaTime, glm::vec3(0.0f, 0.0f, 1.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+    {
+        //cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        model = glm::rotate(model, glm::radians(90.0f) * deltaTime, glm::vec3(0.0f, 0.0f, 1.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)
+    {
+        //cameraPos += cameraSpeed * cameraFront;
+        model = glm::rotate(model, glm::radians(90.0f) * deltaTime, glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_2) == GLFW_PRESS)
+    {
+        //cameraPos -= cameraSpeed * cameraFront;
+        model = glm::rotate(model, glm::radians(-90.0f) * deltaTime, glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
+    {
+        //cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        model = glm::rotate(model, glm::radians(-90.0f) * deltaTime, glm::vec3(0.0f, 0.0f, 1.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
+    {
+        //cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        model = glm::rotate(model, glm::radians(90.0f) * deltaTime, glm::vec3(0.0f, 0.0f, 1.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_9) == GLFW_PRESS)
+    {
+        //cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        model = glm::rotate(model, glm::radians(-90.0f) * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
+    }
+    if (glfwGetKey(window, GLFW_KEY_KP_7) == GLFW_PRESS)
+    {
+        //cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        model = glm::rotate(model, glm::radians(90.0f) * deltaTime, glm::vec3(0.0f, 1.0f, 0.0f));
     }
 }
 
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
-    float xpos = static_cast<float>(xposIn);
+    /*float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
 
     if (firstMouse)
@@ -163,7 +269,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
     front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
     front.y = sin(glm::radians(pitch));
     front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-    cameraFront = glm::normalize(front);
+    cameraFront = glm::normalize(front);*/
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset) {
@@ -207,7 +313,7 @@ static int initialiseGLFWWindow(int screenWidth, int screenHeight) {
     return 0;
 }
 
-int main(void)
+int WinMain(void)
 {
     initialiseGLFWWindow(screenWidth, screenHeight); //Screen Width, Screen Height
 
@@ -231,17 +337,21 @@ int main(void)
     vertexBufferObj.finBindBuffer();
     glBindVertexArray(0);
 
-    std::string textureFile = "resources/textures/container.jpg";
-    std::string textureFileTwo = "resources/textures/awesomeface.png";
-
+    //Setting texture filepath.
+    std::string textureFile = "resources/textures/shiptexture2.jpg", textureFileTwo = "resources/textures/shiptexture.jpg";
+    //Loading textures
     Texture texture1(textureFile.c_str(), false);
-    Texture texture2(textureFileTwo.c_str(), true);
+    Texture texture2(textureFileTwo.c_str(), false);
 
     gameShader.use();
     gameShader.setInt("texture1", 0);
     gameShader.setInt("texture2", 1);
 
     debugModeStart(0); //Wireframe
+
+    //Setting model starting location.
+    model = glm::rotate(model, glm::radians(-70.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -254,7 +364,7 @@ int main(void)
         processInput(window);
 
         /* Render here */
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glActiveTexture(GL_TEXTURE0);
@@ -274,15 +384,12 @@ int main(void)
         gameShader.setMat4("view", view);
 
         glBindVertexArray(VAO);
-        for (unsigned int i = 0; i < 10; i++)
-        {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            gameShader.setMat4("model", model);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+
+        model = glm::translate(model, glm::vec3(0.0f, -0.0f, 0.0f));
+
+        gameShader.setMat4("model", model);
+
+        glDrawArrays(GL_TRIANGLES, 0, 72);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
